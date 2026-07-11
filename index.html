@@ -822,7 +822,7 @@ function renderNews(items) {
       <p>${esc(item.summary)}</p>
       <div class="card-actions">
         <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(L.viewtg)}</a>
-        <button class="mini-btn" onclick="shareItem(${i})">🔗 ${esc(L.share)}</button>
+        <button class="mini-btn" onclick="shareItem(${i}, this)">🔗 ${esc(L.share)}</button>
         <button class="mini-btn" onclick="copyItem(${i}, this)">📋 ${esc(L.copy)}</button>
       </div>
     `;
@@ -843,17 +843,43 @@ function itemText(i) {
   return t;
 }
 
-async function shareItem(i) {
+async function shareItem(i, btn) {
   const it = displayedItems[i];
   if (!it) return;
   const text = itemText(i);
+  /* تلاش اول: منوی اشتراک‌گذاری خود گوشی */
   if (navigator.share) {
-    try {
-      await navigator.share({ title: it.title, text: text });
-      return;
-    } catch (e) { /* کاربر منصرف شد یا خطا — کپی جایگزین می‌شود */ }
+    const variants = [
+      { title: it.title, text: text, url: it.link },
+      { title: it.title, text: text },
+      { text: text },
+      { url: it.link }
+    ];
+    for (const data of variants) {
+      if (navigator.canShare && !navigator.canShare(data)) continue;
+      try {
+        await navigator.share(data);
+        return; /* موفق */
+      } catch (e) {
+        if (e && e.name === "AbortError") return; /* کاربر خودش بست */
+        /* در غیر این صورت، حالت بعدی امتحان می‌شود */
+      }
+    }
   }
-  copyToClipboard(text);
+  /* اگر اشتراک‌گذاری ممکن نبود: کپی + نمایش پیام */
+  try {
+    await copyToClipboard(text);
+    if (btn) {
+      const L = I18N[currentLang];
+      const old = btn.textContent;
+      btn.textContent = L.copied;
+      btn.classList.add("done");
+      setTimeout(() => {
+        btn.textContent = old;
+        btn.classList.remove("done");
+      }, 2000);
+    }
+  } catch (e) { /* هیچ راهی ممکن نشد */ }
 }
 
 function copyToClipboard(text) {
