@@ -313,13 +313,36 @@
     font-weight: 300;
   }
   .news-link {
-    margin-top: auto;
     color: var(--telegram);
     font-size: 0.85rem;
     font-weight: 700;
     text-decoration: none;
   }
   .news-link:hover { text-decoration: underline; }
+
+  /* ---------- دکمه‌های اشتراک‌گذاری و کپی ---------- */
+  .card-actions {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .mini-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .mini-btn:hover { color: var(--text); border-color: var(--text-dim); }
+  .mini-btn.done { color: #4ADE80; border-color: rgba(74,222,128,0.4); }
+  .mini-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   /* ---------- کانال تلگرام ---------- */
   .channel-card {
@@ -531,7 +554,10 @@ const I18N = {
     mt: "ترجمه ماشینی",
     newest: "جدیدترین",
     brand: "پالس ایران ۲۴",
-    viewtg: "مشاهده در تلگرام ←"
+    viewtg: "مشاهده در تلگرام ←",
+    share: "اشتراک‌گذاری",
+    copy: "کپی متن",
+    copied: "کپی شد ✓"
   },
   en: {
     dir: "ltr",
@@ -563,7 +589,10 @@ const I18N = {
     mt: "machine translation",
     newest: "Latest",
     brand: "Pulse Iran 24",
-    viewtg: "View on Telegram →"
+    viewtg: "View on Telegram →",
+    share: "Share",
+    copy: "Copy text",
+    copied: "Copied ✓"
   },
   de: {
     dir: "ltr",
@@ -595,7 +624,10 @@ const I18N = {
     mt: "maschinelle Übersetzung",
     newest: "Neueste",
     brand: "Pulse Iran 24",
-    viewtg: "Auf Telegram ansehen →"
+    viewtg: "Auf Telegram ansehen →",
+    share: "Teilen",
+    copy: "Text kopieren",
+    copied: "Kopiert ✓"
   }
 };
 
@@ -710,6 +742,13 @@ function parsePosts(html) {
 const TG_URL = "https://t.me/s/pulseiran24";
 const SOURCES = [
   async () => {
+    const r = await fetch("/.netlify/functions/news");
+    if (!r.ok) throw new Error("function " + r.status);
+    const data = await r.json();
+    if (!data.ok || !data.posts || !data.posts.length) throw new Error("no posts");
+    return data.posts;
+  },
+  async () => {
     const r = await fetch("https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(TG_URL));
     if (!r.ok) throw new Error("codetabs " + r.status);
     return parsePosts(await r.text());
@@ -723,13 +762,6 @@ const SOURCES = [
     const r = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(TG_URL));
     if (!r.ok) throw new Error("allorigins " + r.status);
     return parsePosts(await r.text());
-  },
-  async () => {
-    const r = await fetch("/.netlify/functions/news");
-    if (!r.ok) throw new Error("function " + r.status);
-    const data = await r.json();
-    if (!data.ok || !data.posts || !data.posts.length) throw new Error("no posts");
-    return data.posts;
   }
 ];
 
@@ -770,8 +802,11 @@ async function translateItems(items, target) {
 const grid = document.getElementById("newsGrid");
 const ticker = document.getElementById("ticker");
 
+let displayedItems = [];
+
 function renderNews(items) {
   const L = I18N[currentLang];
+  displayedItems = items;
   grid.innerHTML = "";
   items.forEach((item, i) => {
     const card = document.createElement("article");
@@ -785,11 +820,67 @@ function renderNews(items) {
       </div>
       <h3>${esc(item.title)}</h3>
       <p>${esc(item.summary)}</p>
-      <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(L.viewtg)}</a>
+      <div class="card-actions">
+        <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(L.viewtg)}</a>
+        <button class="mini-btn" onclick="shareItem(${i})">🔗 ${esc(L.share)}</button>
+        <button class="mini-btn" onclick="copyItem(${i}, this)">📋 ${esc(L.copy)}</button>
+      </div>
     `;
     grid.appendChild(card);
   });
   ticker.innerHTML = items.map(n => `<span><b>${esc(I18N[currentLang].breaking)}:</b> ${esc(n.title)}</span>`).join("");
+}
+
+/* ---------- اشتراک‌گذاری و کپی خبر ---------- */
+function itemText(i) {
+  const it = displayedItems[i];
+  if (!it) return "";
+  const L = I18N[currentLang];
+  let t = it.title;
+  if (it.summary) t += "\n\n" + it.summary;
+  t += "\n\n" + it.link;
+  t += "\n\n📡 " + L.brand + " | https://t.me/pulseiran24";
+  return t;
+}
+
+async function shareItem(i) {
+  const it = displayedItems[i];
+  if (!it) return;
+  const text = itemText(i);
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: it.title, text: text });
+      return;
+    } catch (e) { /* کاربر منصرف شد یا خطا — کپی جایگزین می‌شود */ }
+  }
+  copyToClipboard(text);
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+  return Promise.resolve();
+}
+
+async function copyItem(i, btn) {
+  try {
+    await copyToClipboard(itemText(i));
+    const L = I18N[currentLang];
+    const old = btn.textContent;
+    btn.textContent = L.copied;
+    btn.classList.add("done");
+    setTimeout(() => {
+      btn.textContent = old;
+      btn.classList.remove("done");
+    }, 2000);
+  } catch (e) { /* کپی ممکن نشد */ }
 }
 
 function updateNote() {
