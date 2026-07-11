@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پالس ایران ۲۴ | Pulse Iran 24</title>
+<meta name="description" content="پالس ایران ۲۴ — کانال خبری فارسی‌زبان در تلگرام. اخبار لحظه به لحظه ایران و جهان. Pulse Iran 24 — Persian news channel on Telegram.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D1117;
+    --surface: #161C26;
+    --surface-2: #1D2530;
+    --line: #2A3442;
+    --text: #E9EDF2;
+    --text-dim: #8B96A5;
+    --pulse: #FF2D4A;
+    --pulse-soft: rgba(255, 45, 74, 0.12);
+    --telegram: #2AABEE;
+    --gold: #F5C518;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+
+  /* ---------- نوار خبر فوری ---------- */
+  .breaking-bar {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, #14090B, #1A0C10);
+    border-bottom: 1px solid var(--line);
+    height: 44px;
+    overflow: hidden;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .breaking-label {
+    flex-shrink: 0;
+    background: var(--pulse);
+    color: #fff;
+    font-weight: 900;
+    font-size: 0.8rem;
+    padding: 0 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .breaking-label .dot {
+    width: 8px; height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    animation: blink 1s infinite;
+  }
+  @keyframes blink { 50% { opacity: 0.2; } }
+  .ticker-wrap { flex: 1; overflow: hidden; }
+  .ticker {
+    display: inline-block;
+    white-space: nowrap;
+    padding-inline-start: 100%;
+    animation: ticker-rtl 40s linear infinite;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+  [dir="ltr"] .ticker { animation-name: ticker-ltr; }
+  .ticker span { margin-inline-end: 48px; }
+  .ticker b { color: var(--text); font-weight: 500; }
+  @keyframes ticker-rtl {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes ticker-ltr {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker { animation: none !important; padding-inline-start: 0; }
+    .breaking-label .dot { animation: none; }
+  }
+
+  /* ---------- دکمه‌های تغییر زبان ---------- */
+  .lang-switch {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 10px;
+    height: 100%;
+    border-inline-start: 1px solid var(--line);
+  }
+  .lang-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .lang-btn:hover { color: var(--text); }
+  .lang-btn.active {
+    background: var(--pulse-soft);
+    border-color: rgba(255,45,74,0.4);
+    color: var(--pulse);
+  }
+  .lang-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* ---------- هدر ---------- */
+  header {
+    padding: 72px 24px 48px;
+    text-align: center;
+    position: relative;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,45,74,0.07), transparent);
+  }
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    padding: 6px 18px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+  }
+  .logo-badge .live-dot {
+    width: 9px; height: 9px;
+    background: var(--pulse);
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(255,45,74,0.6);
+    animation: pulse-ring 1.6s infinite;
+  }
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0 rgba(255,45,74,0.55); }
+    70%  { box-shadow: 0 0 0 10px rgba(255,45,74,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,45,74,0); }
+  }
+  h1 {
+    font-size: clamp(2.4rem, 7vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.25;
+  }
+  h1 .accent { color: var(--pulse); }
+  h1 .num {
+    font-weight: 300;
+    color: var(--text-dim);
+  }
+  .tagline {
+    margin-top: 12px;
+    color: var(--text-dim);
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    font-weight: 300;
+  }
+
+  /* ---------- خط نبض (امضای بصری) ---------- */
+  .ekg-wrap {
+    max-width: 680px;
+    margin: 36px auto 0;
+    height: 70px;
+    position: relative;
+  }
+  .ekg-wrap svg { width: 100%; height: 100%; }
+  .ekg-line {
+    fill: none;
+    stroke: var(--pulse);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 6px rgba(255,45,74,0.6));
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: draw-ekg 3.2s linear infinite;
+  }
+  @keyframes draw-ekg {
+    0%   { stroke-dashoffset: 1000; opacity: 1; }
+    75%  { stroke-dashoffset: 0;    opacity: 1; }
+    95%  { opacity: 0; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ekg-line { animation: none; stroke-dashoffset: 0; }
+  }
+
+  .cta-row {
+    margin-top: 40px;
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 30px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    cursor: pointer;
+    border: none;
+  }
+  .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .btn-telegram {
+    background: var(--telegram);
+    color: #06131C;
+  }
+  .btn-telegram:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(42,171,238,0.35); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+  .btn-ghost:hover { border-color: var(--text-dim); transform: translateY(-2px); }
+
+  /* ---------- بخش اخبار ---------- */
+  .section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .section-head .bar {
+    width: 5px; height: 30px;
+    background: var(--pulse);
+    border-radius: 3px;
+  }
+  .section-head h2 {
+    font-size: 1.6rem;
+    font-weight: 900;
+  }
+  .section-head .time-note {
+    margin-inline-start: auto;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+  }
+  .news-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .news-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,45,74,0.4);
+  }
+  .news-card.featured {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+    border-color: rgba(255,45,74,0.35);
+  }
+  .news-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+  }
+  .tag {
+    background: var(--pulse-soft);
+    color: var(--pulse);
+    padding: 2px 12px;
+    border-radius: 100px;
+    font-weight: 700;
+  }
+  .tag.blue  { background: rgba(42,171,238,0.12); color: var(--telegram); }
+  .tag.gold  { background: rgba(245,197,24,0.12); color: var(--gold); }
+  .news-time { color: var(--text-dim); }
+  .news-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.7;
+  }
+  .news-card.featured h3 { font-size: 1.45rem; }
+  .news-card p {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-weight: 300;
+  }
+  .news-link {
+    margin-top: auto;
+    color: var(--telegram);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .news-link:hover { text-decoration: underline; }
+
+  /* ---------- کانال تلگرام ---------- */
+  .channel-card {
+    background: linear-gradient(135deg, var(--surface), var(--surface-2));
+    border: 1px solid rgba(42,171,238,0.35);
+    border-radius: 16px;
+    padding: 40px 28px;
+    text-align: center;
+  }
+  .channel-card .icon { font-size: 3rem; margin-bottom: 12px; }
+  .channel-card h3 { font-size: 1.4rem; font-weight: 900; margin-bottom: 10px; }
+  .channel-card p {
+    color: var(--text-dim);
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto 24px;
+  }
+
+  /* ---------- درباره کانال ---------- */
+  .about {
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .about-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 56px 24px;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  @media (max-width: 760px) {
+    .about-inner { grid-template-columns: 1fr; }
+  }
+  .about h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 16px; }
+  .about p { color: var(--text-dim); font-weight: 300; margin-bottom: 12px; }
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .stat {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat .val {
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: var(--pulse);
+  }
+  .stat .lbl {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* ---------- فوتر ---------- */
+  footer {
+    text-align: center;
+    padding: 44px 24px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+  .socials {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .socials a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-bottom: 1px solid transparent;
+  }
+  .socials a:hover { border-color: var(--pulse); color: var(--pulse); }
+</style>
+</head>
+<body>
+
+<!-- نوار خبر فوری + دکمه زبان -->
+<div class="breaking-bar">
+  <div class="breaking-label"><span class="dot"></span><span id="t-breaking">خبر فوری</span></div>
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker"></div>
+  </div>
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button class="lang-btn active" data-lang="fa" onclick="setLang('fa')">فا</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+  </div>
+</div>
+
+<!-- هدر -->
+<header>
+  <div class="logo-badge"><span class="live-dot"></span> <span id="t-badge">پوشش زنده خبر در تلگرام</span></div>
+  <h1 id="t-h1">پالس <span class="accent">ایران</span> <span class="num">۲۴</span></h1>
+  <p class="tagline" id="t-tagline">نبض خبر ایران و جهان — لحظه به لحظه، بدون وقفه</p>
+
+  <!-- خط نبض: امضای بصری کانال -->
+  <div class="ekg-wrap" aria-hidden="true">
+    <svg viewBox="0 0 680 70" preserveAspectRatio="none">
+      <path class="ekg-line" d="M0,35 L120,35 L150,35 L165,10 L180,60 L195,20 L210,35 L300,35 L330,35 L345,8 L360,62 L375,18 L390,35 L500,35 L530,35 L545,12 L560,58 L575,22 L590,35 L680,35"/>
+    </svg>
+  </div>
+
+  <div class="cta-row">
+    <a class="btn btn-telegram" href="https://t.me/pulseiran24" target="_blank" rel="noopener" id="t-join">
+      عضویت در کانال تلگرام
+    </a>
+    <a class="btn btn-ghost" href="#news" id="t-seenews">مشاهده آخرین اخبار</a>
+  </div>
+</header>
+
+<!-- بخش اخبار -->
+<main class="section" id="news">
+  <div class="section-head">
+    <span class="bar"></span>
+    <h2 id="t-latest">آخرین اخبار</h2>
+    <span class="time-note" id="updateNote">در حال دریافت از کانال تلگرام…</span>
+  </div>
+  <div class="news-grid" id="newsGrid"></div>
+</main>
+
+<!-- کانال تلگرام -->
+<section class="section" id="live-feed">
+  <div class="section-head">
+    <span class="bar"></span>
+    <h2 id="t-chtitle">کانال تلگرام پالس ایران ۲۴</h2>
+  </div>
+  <div class="channel-card">
+    <div class="icon">📡</div>
+    <h3 id="t-chhead">اخبار لحظه به لحظه در تلگرام</h3>
+    <p id="t-chtext">جدیدترین خبرهای ایران و جهان، هر لحظه در کانال پالس ایران ۲۴ منتشر می‌شود. برای دریافت فوری اخبار، عضو کانال شوید.</p>
+    <a class="btn btn-telegram" href="https://t.me/pulseiran24" target="_blank" rel="noopener" id="t-chbtn">
+      ورود به کانال @pulseiran24
+    </a>
+  </div>
+</section>
+
+<!-- درباره کانال -->
+<section class="about">
+  <div class="about-inner">
+    <div>
+      <h2 id="t-abtitle">درباره پالس ایران ۲۴</h2>
+      <p id="t-ab1">پالس ایران ۲۴ یک کانال خبری مستقل فارسی‌زبان در تلگرام است که اخبار ایران و جهان را به‌صورت لحظه‌ای پوشش می‌دهد.</p>
+      <p id="t-ab2">این کانال با بیش از ۲۵ سال تجربه در تولید تلویزیونی اداره می‌شود و هدف آن ارائه خبر دقیق، سریع و بدون حاشیه به مخاطبان فارسی‌زبان است.</p>
+      <p id="t-ab3">پخش زنده خبر در تیک‌تاک نیز به‌زودی آغاز می‌شود.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="val" id="t-s1v">۲۴/۷</div><div class="lbl" id="t-s1l">پوشش خبری</div></div>
+      <div class="stat"><div class="val" id="t-s2v">+۲۵</div><div class="lbl" id="t-s2l">سال تجربه رسانه‌ای</div></div>
+      <div class="stat"><div class="val" id="t-s3v">فارسی</div><div class="lbl" id="t-s3l">زبان کانال</div></div>
+      <div class="stat"><div class="val" id="t-s4v">مستقل</div><div class="lbl" id="t-s4l">خط مشی خبری</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- فوتر -->
+<footer>
+  <div class="socials">
+    <a href="https://t.me/pulseiran24" target="_blank" rel="noopener" id="t-f1">تلگرام</a>
+    <a href="https://instagram.com/alirezaabouzar_official" target="_blank" rel="noopener" id="t-f2">اینستاگرام</a>
+    <a href="https://youtube.com/@alirezaabouzar" target="_blank" rel="noopener" id="t-f3">یوتیوب</a>
+    <a href="https://tiktok.com" target="_blank" rel="noopener" id="t-f4">تیک‌تاک</a>
+  </div>
+  <p id="t-copy">© ۲۰۲۶ پالس ایران ۲۴ — تمامی حقوق محفوظ است | Pulse Iran 24</p>
+</footer>
+
+<script>
+/* ==========================================================
+   🌐 متن‌های رابط سایت به سه زبان
+   ========================================================== */
+const I18N = {
+  fa: {
+    dir: "rtl",
+    breaking: "خبر فوری",
+    badge: "پوشش زنده خبر در تلگرام",
+    h1: 'پالس <span class="accent">ایران</span> <span class="num">۲۴</span>',
+    tagline: "نبض خبر ایران و جهان — لحظه به لحظه، بدون وقفه",
+    join: "عضویت در کانال تلگرام",
+    seenews: "مشاهده آخرین اخبار",
+    latest: "آخرین اخبار",
+    chtitle: "کانال تلگرام پالس ایران ۲۴",
+    chhead: "اخبار لحظه به لحظه در تلگرام",
+    chtext: "جدیدترین خبرهای ایران و جهان، هر لحظه در کانال پالس ایران ۲۴ منتشر می‌شود. برای دریافت فوری اخبار، عضو کانال شوید.",
+    chbtn: "ورود به کانال @pulseiran24",
+    abtitle: "درباره پالس ایران ۲۴",
+    ab1: "پالس ایران ۲۴ یک کانال خبری مستقل فارسی‌زبان در تلگرام است که اخبار ایران و جهان را به‌صورت لحظه‌ای پوشش می‌دهد.",
+    ab2: "این کانال با بیش از ۲۵ سال تجربه در تولید تلویزیونی اداره می‌شود و هدف آن ارائه خبر دقیق، سریع و بدون حاشیه به مخاطبان فارسی‌زبان است.",
+    ab3: "پخش زنده خبر در تیک‌تاک نیز به‌زودی آغاز می‌شود.",
+    s1v: "۲۴/۷", s1l: "پوشش خبری",
+    s2v: "+۲۵",  s2l: "سال تجربه رسانه‌ای",
+    s3v: "فارسی", s3l: "زبان کانال",
+    s4v: "مستقل", s4l: "خط مشی خبری",
+    f1: "تلگرام", f2: "اینستاگرام", f3: "یوتیوب", f4: "تیک‌تاک",
+    copy: "© ۲۰۲۶ پالس ایران ۲۴ — تمامی حقوق محفوظ است | Pulse Iran 24",
+    loading: "در حال دریافت از کانال تلگرام…",
+    live: "به‌روزرسانی خودکار از کانال تلگرام ✓",
+    fallback: "آخرین اخبار",
+    translating: "در حال ترجمه…",
+    mt: "ترجمه ماشینی",
+    newest: "جدیدترین",
+    brand: "پالس ایران ۲۴",
+    viewtg: "مشاهده در تلگرام ←"
+  },
+  en: {
+    dir: "ltr",
+    breaking: "BREAKING",
+    badge: "Live news coverage on Telegram",
+    h1: 'PULSE <span class="accent">IRAN</span> <span class="num">24</span>',
+    tagline: "The pulse of Iran and world news — minute by minute, nonstop",
+    join: "Join the Telegram channel",
+    seenews: "See the latest news",
+    latest: "Latest News",
+    chtitle: "Pulse Iran 24 Telegram Channel",
+    chhead: "News around the clock on Telegram",
+    chtext: "The latest news from Iran and the world, published every moment on Pulse Iran 24. Join the channel for instant updates.",
+    chbtn: "Join @pulseiran24",
+    abtitle: "About Pulse Iran 24",
+    ab1: "Pulse Iran 24 is an independent Persian-language news channel on Telegram covering Iran and world news around the clock.",
+    ab2: "The channel is run with over 25 years of television production experience, aiming to deliver fast, accurate, no-nonsense news.",
+    ab3: "Live news broadcasts on TikTok are coming soon.",
+    s1v: "24/7", s1l: "News coverage",
+    s2v: "25+",  s2l: "Years in media",
+    s3v: "Persian", s3l: "Channel language",
+    s4v: "Independent", s4l: "Editorial line",
+    f1: "Telegram", f2: "Instagram", f3: "YouTube", f4: "TikTok",
+    copy: "© 2026 Pulse Iran 24 — All rights reserved",
+    loading: "Loading from the Telegram channel…",
+    live: "Auto-updated from the Telegram channel ✓",
+    fallback: "Latest news",
+    translating: "Translating…",
+    mt: "machine translation",
+    newest: "Latest",
+    brand: "Pulse Iran 24",
+    viewtg: "View on Telegram →"
+  },
+  de: {
+    dir: "ltr",
+    breaking: "EILMELDUNG",
+    badge: "Live-Nachrichten auf Telegram",
+    h1: 'PULSE <span class="accent">IRAN</span> <span class="num">24</span>',
+    tagline: "Der Puls der Nachrichten aus Iran und der Welt — Minute für Minute",
+    join: "Telegram-Kanal beitreten",
+    seenews: "Aktuelle Nachrichten ansehen",
+    latest: "Aktuelle Nachrichten",
+    chtitle: "Pulse Iran 24 Telegram-Kanal",
+    chhead: "Nachrichten rund um die Uhr auf Telegram",
+    chtext: "Die neuesten Nachrichten aus dem Iran und der Welt — jeden Moment auf Pulse Iran 24. Treten Sie dem Kanal bei, um sofort informiert zu werden.",
+    chbtn: "Kanal @pulseiran24 beitreten",
+    abtitle: "Über Pulse Iran 24",
+    ab1: "Pulse Iran 24 ist ein unabhängiger persischsprachiger Nachrichtenkanal auf Telegram, der rund um die Uhr über den Iran und die Welt berichtet.",
+    ab2: "Der Kanal wird mit über 25 Jahren Erfahrung in der Fernsehproduktion geführt — für schnelle und genaue Nachrichten ohne Umwege.",
+    ab3: "Live-Nachrichten auf TikTok starten in Kürze.",
+    s1v: "24/7", s1l: "Berichterstattung",
+    s2v: "25+",  s2l: "Jahre Medienerfahrung",
+    s3v: "Persisch", s3l: "Kanalsprache",
+    s4v: "Unabhängig", s4l: "Redaktionelle Linie",
+    f1: "Telegram", f2: "Instagram", f3: "YouTube", f4: "TikTok",
+    copy: "© 2026 Pulse Iran 24 — Alle Rechte vorbehalten",
+    loading: "Wird vom Telegram-Kanal geladen…",
+    live: "Automatisch vom Telegram-Kanal aktualisiert ✓",
+    fallback: "Aktuelle Nachrichten",
+    translating: "Übersetzen…",
+    mt: "maschinelle Übersetzung",
+    newest: "Neueste",
+    brand: "Pulse Iran 24",
+    viewtg: "Auf Telegram ansehen →"
+  }
+};
+
+/* ==========================================================
+   ✏️ خبرهای پشتیبان: اگر اتصال به تلگرام برقرار نشد،
+   این خبرها نمایش داده می‌شوند. می‌توانید ویرایششان کنید.
+   ========================================================== */
+const NEWS = [
+  {
+    title: "تشدید تنش نظامی ایران و آمریکا؛ آمار رسمی از ۱۴ کشته و ۷۸ مصدوم در حملات اخیر خبر می‌دهد",
+    summary: "مقام‌های محلی از حملاتی به نقاطی در اطراف اهواز، کبودرآهنگ و آق‌قلا خبر داده‌اند. در حمله اطراف اهواز سه نفر جان باختند؛ حملات به کبودرآهنگ و پل آق‌تکه‌خان بدون تلفات جانی گزارش شده است.",
+    published: "2026-07-10T21:30:00+02:00",
+    link: "https://t.me/pulseiran24"
+  },
+  {
+    title: "تردد کشتی‌ها در تنگه هرمز تقریباً متوقف شد",
+    summary: "بلومبرگ به نقل از داده‌های ردیابی کشتی‌ها گزارش داد عبور و مرور در این آبراه راهبردی تقریباً به‌طور کامل متوقف شده و تحرکات محدود به مسیر مورد تأیید ایران است.",
+    published: "2026-07-10T20:30:00+02:00",
+    link: "https://t.me/pulseiran24"
+  },
+  {
+    title: "گوترش خواستار کاهش تنش و از سرگیری مذاکرات تهران و واشنگتن شد",
+    summary: "دبیرکل سازمان ملل از دو طرف خواست تنش‌ها را کاهش دهند. وزیران خارجه قطر و ایران نیز در تماس تلفنی بر ضرورت بازگشت به دیپلماسی تأکید کردند.",
+    published: "2026-07-10T21:45:00+02:00",
+    link: "https://t.me/pulseiran24"
+  },
+  {
+    title: "جهش قیمت نفت در پی تنش‌ها در خلیج فارس",
+    summary: "بازار جهانی انرژی با بالا گرفتن درگیری‌ها میان ایران و آمریکا و اختلال در تنگه هرمز، شاهد افزایش شدید قیمت نفت بود.",
+    published: "2026-07-10T18:30:00+02:00",
+    link: "https://t.me/pulseiran24"
+  },
+  {
+    title: "پرتغال از جام جهانی ۲۰۲۶ حذف شد؛ پایان کار رونالدو در جام جهانی",
+    summary: "اسپانیا با پیروزی مقابل پرتغال، این تیم را از جام جهانی ۲۰۲۶ حذف کرد تا کریستیانو رونالدو با جام جهانی خداحافظی کند.",
+    published: "2026-07-09T22:00:00+02:00",
+    link: "https://t.me/pulseiran24"
+  }
+];
+
+/* ---------- وضعیت کلی ---------- */
+let currentLang = "fa";
+let currentItems = null;     // پست‌های اصلی (فارسی)
+let noteState = "loading";   // loading | live | fallback
+const trCache = {};          // حافظه ترجمه‌ها
+
+try {
+  const saved = localStorage.getItem("pulseLang");
+  if (saved && I18N[saved]) currentLang = saved;
+} catch (e) { /* بدون ذخیره‌سازی ادامه می‌دهیم */ }
+
+/* ---------- ابزارها ---------- */
+const esc = s => String(s || "").replace(/[&<>"']/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const faNum = n => new Intl.NumberFormat("fa-IR").format(n);
+
+function relTime(iso, lang) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  const hours = Math.floor(mins / 60);
+  const days = Math.floor(hours / 24);
+  if (lang === "en") {
+    if (mins < 1) return "moments ago";
+    if (mins < 60) return mins + " min ago";
+    if (hours < 24) return hours + " h ago";
+    if (days === 1) return "yesterday";
+    return days + " days ago";
+  }
+  if (lang === "de") {
+    if (mins < 1) return "gerade eben";
+    if (mins < 60) return "vor " + mins + " Min.";
+    if (hours < 24) return "vor " + hours + " Std.";
+    if (days === 1) return "gestern";
+    return "vor " + days + " Tagen";
+  }
+  if (mins < 1) return "لحظاتی پیش";
+  if (mins < 60) return faNum(mins) + " دقیقه پیش";
+  if (hours < 24) return faNum(hours) + " ساعت پیش";
+  if (days === 1) return "دیروز";
+  return faNum(days) + " روز پیش";
+}
+
+/* ---------- خواندن پست‌های کانال تلگرام ---------- */
+function cleanText(raw) {
+  return raw
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&nbsp;/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function parsePosts(html) {
+  const posts = [];
+  const blocks = html.split("tgme_widget_message_wrap").slice(1);
+  for (const block of blocks) {
+    const linkM = block.match(/class="tgme_widget_message_date"[^>]*href="([^"]+)"/);
+    const timeM = block.match(/<time[^>]*datetime="([^"]+)"/);
+    const textM = block.match(/js-message_text[^>]*>([\s\S]*?)<\/div>/);
+    if (!textM) continue;
+    const text = cleanText(textM[1]);
+    if (!text) continue;
+    let link = linkM ? linkM[1] : "https://t.me/pulseiran24";
+    if (!/^https:\/\/t\.me\//.test(link)) link = "https://t.me/pulseiran24";
+    posts.push({ text, link, published: timeM ? timeM[1] : null });
+  }
+  return posts.slice(-8).reverse();
+}
+
+const TG_URL = "https://t.me/s/pulseiran24";
+const SOURCES = [
+  async () => {
+    const r = await fetch("https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(TG_URL));
+    if (!r.ok) throw new Error("codetabs " + r.status);
+    return parsePosts(await r.text());
+  },
+  async () => {
+    const r = await fetch("https://cors.x2u.in/" + TG_URL);
+    if (!r.ok) throw new Error("x2u " + r.status);
+    return parsePosts(await r.text());
+  },
+  async () => {
+    const r = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(TG_URL));
+    if (!r.ok) throw new Error("allorigins " + r.status);
+    return parsePosts(await r.text());
+  },
+  async () => {
+    const r = await fetch("/.netlify/functions/news");
+    if (!r.ok) throw new Error("function " + r.status);
+    const data = await r.json();
+    if (!data.ok || !data.posts || !data.posts.length) throw new Error("no posts");
+    return data.posts;
+  }
+];
+
+/* ---------- ترجمه ماشینی (برای EN و DE) ---------- */
+async function translateText(text, target) {
+  const key = target + "|" + text;
+  if (trCache[key]) return trCache[key];
+  // مسیر اول
+  try {
+    const r = await fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=fa&tl=" + target + "&dt=t&q=" + encodeURIComponent(text));
+    if (r.ok) {
+      const d = await r.json();
+      const out = d[0].map(seg => seg[0]).join("");
+      if (out) { trCache[key] = out; return out; }
+    }
+  } catch (e) { /* مسیر بعدی */ }
+  // مسیر دوم
+  try {
+    const r = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text.slice(0, 480)) + "&langpair=fa|" + target);
+    if (r.ok) {
+      const d = await r.json();
+      const out = d && d.responseData && d.responseData.translatedText;
+      if (out) { trCache[key] = out; return out; }
+    }
+  } catch (e) { /* ترجمه ممکن نشد */ }
+  return text; // در بدترین حالت متن فارسی می‌ماند
+}
+
+async function translateItems(items, target) {
+  return Promise.all(items.map(async it => ({
+    ...it,
+    title: it.title ? await translateText(it.title, target) : "",
+    summary: it.summary ? await translateText(it.summary, target) : ""
+  })));
+}
+
+/* ---------- نمایش ---------- */
+const grid = document.getElementById("newsGrid");
+const ticker = document.getElementById("ticker");
+
+function renderNews(items) {
+  const L = I18N[currentLang];
+  grid.innerHTML = "";
+  items.forEach((item, i) => {
+    const card = document.createElement("article");
+    card.className = "news-card" + (i === 0 ? " featured" : "");
+    const tagText = i === 0 ? L.newest : L.brand;
+    const tagClass = i === 0 ? "" : "blue";
+    card.innerHTML = `
+      <div class="news-meta">
+        <span class="tag ${tagClass}">${esc(tagText)}</span>
+        <span class="news-time" data-published="${esc(item.published || "")}">${item.published ? relTime(item.published, currentLang) : ""}</span>
+      </div>
+      <h3>${esc(item.title)}</h3>
+      <p>${esc(item.summary)}</p>
+      <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(L.viewtg)}</a>
+    `;
+    grid.appendChild(card);
+  });
+  ticker.innerHTML = items.map(n => `<span><b>${esc(I18N[currentLang].breaking)}:</b> ${esc(n.title)}</span>`).join("");
+}
+
+function updateNote() {
+  const L = I18N[currentLang];
+  const note = document.getElementById("updateNote");
+  let text = L[noteState] || L.fallback;
+  if (currentLang !== "fa" && (noteState === "live" || noteState === "fallback")) {
+    text += " · " + L.mt;
+  }
+  note.textContent = text;
+}
+
+async function displayCurrent() {
+  const items = currentItems || NEWS;
+  if (currentLang === "fa") {
+    renderNews(items);
+    updateNote();
+    return;
+  }
+  document.getElementById("updateNote").textContent = I18N[currentLang].translating;
+  const translated = await translateItems(items, currentLang);
+  if (I18N[currentLang]) {
+    renderNews(translated);
+    updateNote();
+  }
+}
+
+/* ---------- تغییر زبان ---------- */
+function applyUI() {
+  const L = I18N[currentLang];
+  document.documentElement.setAttribute("lang", currentLang);
+  document.documentElement.setAttribute("dir", L.dir);
+  document.getElementById("t-h1").innerHTML = L.h1;
+  const map = {
+    "t-breaking": "breaking", "t-badge": "badge", "t-tagline": "tagline",
+    "t-join": "join", "t-seenews": "seenews", "t-latest": "latest",
+    "t-chtitle": "chtitle", "t-chhead": "chhead", "t-chtext": "chtext", "t-chbtn": "chbtn",
+    "t-abtitle": "abtitle", "t-ab1": "ab1", "t-ab2": "ab2", "t-ab3": "ab3",
+    "t-s1v": "s1v", "t-s1l": "s1l", "t-s2v": "s2v", "t-s2l": "s2l",
+    "t-s3v": "s3v", "t-s3l": "s3l", "t-s4v": "s4v", "t-s4l": "s4l",
+    "t-f1": "f1", "t-f2": "f2", "t-f3": "f3", "t-f4": "f4", "t-copy": "copy"
+  };
+  for (const id in map) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = L[map[id]];
+  }
+  document.querySelectorAll(".lang-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.lang === currentLang);
+  });
+}
+
+function setLang(lang) {
+  if (!I18N[lang] || lang === currentLang) return;
+  currentLang = lang;
+  try { localStorage.setItem("pulseLang", lang); } catch (e) { /* بدون ذخیره */ }
+  applyUI();
+  displayCurrent();
+}
+
+/* ---------- دریافت خودکار پست‌ها از کانال ---------- */
+async function loadChannelNews() {
+  for (const getPosts of SOURCES) {
+    try {
+      const posts = await getPosts();
+      if (!posts || !posts.length) continue;
+      currentItems = posts.map(p => {
+        const lines = p.text.split("\n").map(l => l.trim()).filter(Boolean);
+        let title = lines[0] || "";
+        if (title.length > 140) title = title.slice(0, 140) + "…";
+        let summary = lines.slice(1).join(" ");
+        if (summary.length > 220) summary = summary.slice(0, 220) + "…";
+        return { title, summary, published: p.published, link: p.link };
+      });
+      noteState = "live";
+      /* پست‌های موفق ذخیره می‌شوند تا در قطعی‌های بعدی هم نمایش داده شوند */
+      try {
+        localStorage.setItem("pulseCache", JSON.stringify({ t: Date.now(), posts: currentItems }));
+      } catch (e) { /* بدون ذخیره */ }
+      displayCurrent();
+      return;
+    } catch (e) { /* مسیر بعدی */ }
+  }
+  /* هیچ مسیری جواب نداد: اول پست‌های ذخیره‌شده قبلی (تا ۲۴ ساعت)، بعد خبرهای پشتیبان */
+  try {
+    const c = JSON.parse(localStorage.getItem("pulseCache"));
+    if (c && c.posts && c.posts.length && Date.now() - c.t < 86400000) {
+      currentItems = c.posts;
+      noteState = "live";
+      displayCurrent();
+      return;
+    }
+  } catch (e) { /* حافظه‌ای موجود نیست */ }
+  currentItems = null;
+  noteState = "fallback";
+  displayCurrent();
+}
+
+/* ---------- شروع ---------- */
+applyUI();
+displayCurrent();
+loadChannelNews();
+
+/* هر ۵ دقیقه یک‌بار، خبرهای تازه از کانال گرفته می‌شوند */
+setInterval(loadChannelNews, 300000);
+
+/* هر یک دقیقه، زمان‌های نسبی به‌صورت زنده تازه می‌شوند */
+setInterval(() => {
+  document.querySelectorAll(".news-time[data-published]").forEach(el => {
+    if (el.dataset.published) el.textContent = relTime(el.dataset.published, currentLang);
+  });
+}, 60000);
+</script>
+
+</body>
+</html>
