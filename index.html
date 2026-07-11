@@ -344,6 +344,19 @@
   .mini-btn.done { color: #4ADE80; border-color: rgba(74,222,128,0.4); }
   .mini-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
+  /* ---------- پرچم شیر و خورشید ---------- */
+  .flag-header {
+    height: 15px;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
+  }
+  .flag-icon {
+    height: 14px;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.12);
+    flex-shrink: 0;
+  }
+
   /* ---------- کانال تلگرام ---------- */
   .channel-card {
     background: linear-gradient(135deg, var(--surface), var(--surface-2));
@@ -445,7 +458,7 @@
 
 <!-- هدر -->
 <header>
-  <div class="logo-badge"><span class="live-dot"></span> <span id="t-badge">پوشش زنده خبر در تلگرام</span></div>
+  <div class="logo-badge"><span class="live-dot"></span> <img class="flag-header" src="https://commons.wikimedia.org/wiki/Special:FilePath/State_flag_of_Iran_%281964%E2%80%931980%29.svg" alt="پرچم شیر و خورشید ایران" onerror="this.style.display='none'"> <span id="t-badge">پوشش زنده خبر در تلگرام</span></div>
   <h1 id="t-h1">پالس <span class="accent">ایران</span> <span class="num">۲۴</span></h1>
   <p class="tagline" id="t-tagline">نبض خبر ایران و جهان — لحظه به لحظه، بدون وقفه</p>
 
@@ -804,6 +817,18 @@ const ticker = document.getElementById("ticker");
 
 let displayedItems = [];
 
+/* ---------- پرچم شیر و خورشید برای خبرهای مربوط به ایران ---------- */
+const FLAG_URL = "https://commons.wikimedia.org/wiki/Special:FilePath/State_flag_of_Iran_%281964%E2%80%931980%29.svg";
+const IRAN_WORDS_FA = ["ایران", "تهران", "اهواز", "اصفهان", "مشهد", "تبریز", "شیراز", "قم", "کرج", "خوزستان", "کردستان", "بلوچستان", "گیلان", "مازندران", "هرمز", "پارچین", "خامنه", "پزشکیان", "سپاه", "بسیج", "تومان", "خلیج فارس"];
+const IRAN_WORDS_EN = ["iran", "tehran", "teheran", "persian gulf", "khamenei", "pezeshkian", "irgc", "ahvaz", "isfahan", "mashhad", "tabriz", "shiraz", "hormuz", "hormus"];
+
+function isIranNews(item) {
+  const t = ((item.title || "") + " " + (item.summary || ""));
+  if (IRAN_WORDS_FA.some(w => t.includes(w))) return true;
+  const tl = t.toLowerCase();
+  return IRAN_WORDS_EN.some(w => tl.includes(w));
+}
+
 function renderNews(items) {
   const L = I18N[currentLang];
   displayedItems = items;
@@ -813,8 +838,13 @@ function renderNews(items) {
     card.className = "news-card" + (i === 0 ? " featured" : "");
     const tagText = i === 0 ? L.newest : L.brand;
     const tagClass = i === 0 ? "" : "blue";
+    const showFlag = (item.iran !== undefined) ? item.iran : isIranNews(item);
+    const flagHtml = showFlag
+      ? '<img class="flag-icon" src="' + FLAG_URL + '" alt="Iran" onerror="this.style.display=\'none\'">'
+      : "";
     card.innerHTML = `
       <div class="news-meta">
+        ${flagHtml}
         <span class="tag ${tagClass}">${esc(tagText)}</span>
         <span class="news-time" data-published="${esc(item.published || "")}">${item.published ? relTime(item.published, currentLang) : ""}</span>
       </div>
@@ -978,7 +1008,9 @@ async function loadChannelNews() {
         if (title.length > 140) title = title.slice(0, 140) + "…";
         let summary = lines.slice(1).join(" ");
         if (summary.length > 220) summary = summary.slice(0, 220) + "…";
-        return { title, summary, published: p.published, link: p.link };
+        const it = { title, summary, published: p.published, link: p.link };
+        it.iran = isIranNews(it);
+        return it;
       });
       noteState = "live";
       /* پست‌های موفق ذخیره می‌شوند تا در قطعی‌های بعدی هم نمایش داده شوند */
