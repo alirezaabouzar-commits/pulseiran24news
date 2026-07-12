@@ -357,6 +357,80 @@
     flex-shrink: 0;
   }
 
+  /* ---------- پرچم مواج محو در پس‌زمینه هدر ---------- */
+  .flag-backdrop {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(560px, 85%);
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+    animation: flag-wave 9s ease-in-out infinite alternate;
+  }
+  .flag-backdrop img {
+    width: 100%;
+    display: block;
+    border-radius: 8px;
+  }
+  @keyframes flag-wave {
+    0%   { transform: translateX(-50%) skewY(-1.5deg) translateY(0); }
+    50%  { transform: translateX(-50%) skewY(0.5deg)  translateY(-6px); }
+    100% { transform: translateX(-50%) skewY(1.5deg)  translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flag-backdrop { animation: none; }
+  }
+  header > *:not(.flag-backdrop) { position: relative; z-index: 1; }
+
+  /* ---------- فرم تماس با مدیر ---------- */
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 24px;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  .contact-card p.desc {
+    color: var(--text-dim);
+    font-weight: 300;
+    font-size: 0.92rem;
+    margin-bottom: 18px;
+  }
+  .contact-card input,
+  .contact-card textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+  }
+  .contact-card textarea { min-height: 110px; resize: vertical; }
+  .contact-card input:focus,
+  .contact-card textarea:focus {
+    outline: none;
+    border-color: var(--pulse);
+  }
+  .contact-status {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+  .contact-status.ok { color: #4ADE80; }
+  .contact-status.err { color: var(--pulse); }
+
+  .visits-line {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+
   /* ---------- کانال تلگرام ---------- */
   .channel-card {
     background: linear-gradient(135deg, var(--surface), var(--surface-2));
@@ -458,6 +532,9 @@
 
 <!-- هدر -->
 <header>
+  <div class="flag-backdrop" aria-hidden="true">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/State_flag_of_Iran_%281964%E2%80%931980%29.svg" alt="" onerror="this.parentElement.style.display='none'">
+  </div>
   <div class="logo-badge"><span class="live-dot"></span> <img class="flag-header" src="https://commons.wikimedia.org/wiki/Special:FilePath/State_flag_of_Iran_%281964%E2%80%931980%29.svg" alt="پرچم شیر و خورشید ایران" onerror="this.style.display='none'"> <span id="t-badge">پوشش زنده خبر در تلگرام</span></div>
   <h1 id="t-h1">پالس <span class="accent">ایران</span> <span class="num">۲۴</span></h1>
   <p class="tagline" id="t-tagline">نبض خبر ایران و جهان — لحظه به لحظه، بدون وقفه</p>
@@ -521,6 +598,25 @@
   </div>
 </section>
 
+<!-- ارتباط با مدیر -->
+<section class="section" id="contact">
+  <div class="section-head">
+    <span class="bar"></span>
+    <h2 id="t-cttitle">ارتباط با مدیر سایت</h2>
+  </div>
+  <div class="contact-card">
+    <p class="desc" id="t-cttext">پیام شما به‌صورت مستقیم و محرمانه به مدیر پالس ایران ۲۴ می‌رسد.</p>
+    <form name="kontakt" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="contactForm">
+      <input type="hidden" name="form-name" value="kontakt">
+      <p style="display:none;"><input name="bot-field"></p>
+      <input type="text" name="name" id="ctName" placeholder="نام (اختیاری)">
+      <textarea name="message" id="ctMsg" placeholder="پیام شما…" required></textarea>
+      <button type="submit" class="btn btn-telegram" style="width:100%; justify-content:center;" id="ctSend">ارسال پیام</button>
+      <div class="contact-status" id="ctStatus"></div>
+    </form>
+  </div>
+</section>
+
 <!-- فوتر -->
 <footer>
   <div class="socials">
@@ -530,6 +626,7 @@
     <a href="https://tiktok.com" target="_blank" rel="noopener" id="t-f4">تیک‌تاک</a>
   </div>
   <p id="t-copy">© ۲۰۲۶ پالس ایران ۲۴ — تمامی حقوق محفوظ است | Pulse Iran 24</p>
+  <p class="visits-line">👁 <span id="t-visits">بازدید کل</span>: <span id="visitCount">…</span></p>
 </footer>
 
 <script>
@@ -559,7 +656,7 @@ const I18N = {
     s3v: "فارسی", s3l: "زبان کانال",
     s4v: "مستقل", s4l: "خط مشی خبری",
     f1: "تلگرام", f2: "اینستاگرام", f3: "یوتیوب", f4: "تیک‌تاک",
-    copy: "© ۲۰۲۶ پالس ایران ۲۴ — تمامی حقوق محفوظ است | Pulse Iran 24",
+    copyright: "© ۲۰۲۶ پالس ایران ۲۴ — تمامی حقوق محفوظ است | Pulse Iran 24",
     loading: "در حال دریافت از کانال تلگرام…",
     live: "به‌روزرسانی خودکار از کانال تلگرام ✓",
     fallback: "آخرین اخبار",
@@ -570,7 +667,16 @@ const I18N = {
     viewtg: "مشاهده در تلگرام ←",
     share: "اشتراک‌گذاری",
     copy: "کپی متن",
-    copied: "کپی شد ✓"
+    copied: "کپی شد ✓",
+    comments: "نظرات",
+    cttitle: "ارتباط با مدیر سایت",
+    cttext: "پیام شما به‌صورت مستقیم و محرمانه به مدیر پالس ایران ۲۴ می‌رسد — بدون نیاز به ایمیل یا شماره تماس.",
+    ctname: "نام (اختیاری)",
+    ctmsg: "پیام شما…",
+    ctsend: "ارسال پیام",
+    ctok: "پیام شما دریافت شد. متشکریم! 🙏",
+    cterr: "ارسال ممکن نشد — دوباره تلاش کنید.",
+    visits: "بازدید کل"
   },
   en: {
     dir: "ltr",
@@ -594,7 +700,7 @@ const I18N = {
     s3v: "Persian", s3l: "Channel language",
     s4v: "Independent", s4l: "Editorial line",
     f1: "Telegram", f2: "Instagram", f3: "YouTube", f4: "TikTok",
-    copy: "© 2026 Pulse Iran 24 — All rights reserved",
+    copyright: "© 2026 Pulse Iran 24 — All rights reserved",
     loading: "Loading from the Telegram channel…",
     live: "Auto-updated from the Telegram channel ✓",
     fallback: "Latest news",
@@ -605,7 +711,16 @@ const I18N = {
     viewtg: "View on Telegram →",
     share: "Share",
     copy: "Copy text",
-    copied: "Copied ✓"
+    copied: "Copied ✓",
+    comments: "Comments",
+    cttitle: "Contact the Editor",
+    cttext: "Your message goes directly and privately to the Pulse Iran 24 editor — no email or phone number needed.",
+    ctname: "Name (optional)",
+    ctmsg: "Your message…",
+    ctsend: "Send message",
+    ctok: "Message received. Thank you! 🙏",
+    cterr: "Sending failed — please try again.",
+    visits: "Total visits"
   },
   de: {
     dir: "ltr",
@@ -629,7 +744,7 @@ const I18N = {
     s3v: "Persisch", s3l: "Kanalsprache",
     s4v: "Unabhängig", s4l: "Redaktionelle Linie",
     f1: "Telegram", f2: "Instagram", f3: "YouTube", f4: "TikTok",
-    copy: "© 2026 Pulse Iran 24 — Alle Rechte vorbehalten",
+    copyright: "© 2026 Pulse Iran 24 — Alle Rechte vorbehalten",
     loading: "Wird vom Telegram-Kanal geladen…",
     live: "Automatisch vom Telegram-Kanal aktualisiert ✓",
     fallback: "Aktuelle Nachrichten",
@@ -640,7 +755,16 @@ const I18N = {
     viewtg: "Auf Telegram ansehen →",
     share: "Teilen",
     copy: "Text kopieren",
-    copied: "Kopiert ✓"
+    copied: "Kopiert ✓",
+    comments: "Kommentare",
+    cttitle: "Kontakt zur Redaktion",
+    cttext: "Ihre Nachricht geht direkt und vertraulich an die Redaktion von Pulse Iran 24 — ohne E-Mail oder Telefonnummer.",
+    ctname: "Name (optional)",
+    ctmsg: "Ihre Nachricht…",
+    ctsend: "Nachricht senden",
+    ctok: "Nachricht erhalten. Vielen Dank! 🙏",
+    cterr: "Senden fehlgeschlagen — bitte erneut versuchen.",
+    visits: "Besuche insgesamt"
   }
 };
 
@@ -829,6 +953,11 @@ function isIranNews(item) {
   return IRAN_WORDS_EN.some(w => tl.includes(w));
 }
 
+function postId(item) {
+  const m = (item.link || "").match(/\/(\d+)$/);
+  return m ? m[1] : null;
+}
+
 function renderNews(items) {
   const L = I18N[currentLang];
   displayedItems = items;
@@ -842,6 +971,13 @@ function renderNews(items) {
     const flagHtml = showFlag
       ? '<img class="flag-icon" src="' + FLAG_URL + '" alt="Iran" onerror="this.style.display=\'none\'">'
       : "";
+    const pid = postId(item);
+    const likeHtml = pid
+      ? `<button class="mini-btn like-btn" id="like-${pid}" onclick="likeItem('${pid}', this)">❤️ <span>–</span></button>`
+      : "";
+    const commentsHtml = pid
+      ? `<a class="mini-btn" style="text-decoration:none;" href="${esc(item.link)}" target="_blank" rel="noopener">💬 ${esc(L.comments)}</a>`
+      : "";
     card.innerHTML = `
       <div class="news-meta">
         ${flagHtml}
@@ -852,6 +988,8 @@ function renderNews(items) {
       <p>${esc(item.summary)}</p>
       <div class="card-actions">
         <a class="news-link" href="${esc(item.link)}" target="_blank" rel="noopener">${esc(L.viewtg)}</a>
+        ${likeHtml}
+        ${commentsHtml}
         <button class="mini-btn" onclick="shareItem(${i}, this)">🔗 ${esc(L.share)}</button>
         <button class="mini-btn" onclick="copyItem(${i}, this)">📋 ${esc(L.copy)}</button>
       </div>
@@ -859,6 +997,7 @@ function renderNews(items) {
     grid.appendChild(card);
   });
   ticker.innerHTML = items.map(n => `<span><b>${esc(I18N[currentLang].breaking)}:</b> ${esc(n.title)}</span>`).join("");
+  loadLikes(items.map(postId).filter(Boolean));
 }
 
 /* ---------- اشتراک‌گذاری و کپی خبر ---------- */
@@ -977,12 +1116,20 @@ function applyUI() {
     "t-abtitle": "abtitle", "t-ab1": "ab1", "t-ab2": "ab2", "t-ab3": "ab3",
     "t-s1v": "s1v", "t-s1l": "s1l", "t-s2v": "s2v", "t-s2l": "s2l",
     "t-s3v": "s3v", "t-s3l": "s3l", "t-s4v": "s4v", "t-s4l": "s4l",
-    "t-f1": "f1", "t-f2": "f2", "t-f3": "f3", "t-f4": "f4", "t-copy": "copy"
+    "t-f1": "f1", "t-f2": "f2", "t-f3": "f3", "t-f4": "f4", "t-copy": "copyright",
+    "t-cttitle": "cttitle", "t-cttext": "cttext", "t-visits": "visits"
   };
   for (const id in map) {
     const el = document.getElementById(id);
     if (el) el.textContent = L[map[id]];
   }
+  /* جای‌گذاری متن‌های فرم تماس */
+  const ctName = document.getElementById("ctName");
+  const ctMsg = document.getElementById("ctMsg");
+  const ctSend = document.getElementById("ctSend");
+  if (ctName) ctName.placeholder = L.ctname;
+  if (ctMsg) ctMsg.placeholder = L.ctmsg;
+  if (ctSend) ctSend.textContent = L.ctsend;
   document.querySelectorAll(".lang-btn").forEach(b => {
     b.classList.toggle("active", b.dataset.lang === currentLang);
   });
@@ -1040,6 +1187,88 @@ async function loadChannelNews() {
 applyUI();
 displayCurrent();
 loadChannelNews();
+
+/* ---------- آمار: بازدید و لایک ---------- */
+const STATS_URL = "/.netlify/functions/stats";
+
+async function initVisits() {
+  const el = document.getElementById("visitCount");
+  try {
+    let counted = false;
+    try { counted = sessionStorage.getItem("pulseVisited") === "1"; } catch (e) {}
+    const r = await fetch(STATS_URL + "?action=" + (counted ? "get" : "visit"));
+    const d = await r.json();
+    if (!counted) { try { sessionStorage.setItem("pulseVisited", "1"); } catch (e) {} }
+    if (d && typeof d.visits === "number") {
+      el.textContent = currentLang === "fa" ? faNum(d.visits) : String(d.visits);
+      return;
+    }
+    throw new Error("no data");
+  } catch (e) {
+    if (el && el.parentElement) el.parentElement.style.display = "none";
+  }
+}
+initVisits();
+
+async function loadLikes(ids) {
+  if (!ids || !ids.length) return;
+  try {
+    const r = await fetch(STATS_URL + "?action=likes&ids=" + ids.join(","));
+    const d = await r.json();
+    if (!d || !d.likes) return;
+    ids.forEach(id => {
+      const btn = document.getElementById("like-" + id);
+      if (!btn) return;
+      const span = btn.querySelector("span");
+      const n = d.likes[id] || 0;
+      if (span) span.textContent = currentLang === "fa" ? faNum(n) : String(n);
+      let liked = false;
+      try { liked = localStorage.getItem("liked:" + id) === "1"; } catch (e) {}
+      if (liked) btn.classList.add("done");
+    });
+  } catch (e) { /* آمار در دسترس نیست */ }
+}
+
+async function likeItem(id, btn) {
+  let liked = false;
+  try { liked = localStorage.getItem("liked:" + id) === "1"; } catch (e) {}
+  if (liked) return;
+  try {
+    const r = await fetch(STATS_URL + "?action=like&id=" + id);
+    const d = await r.json();
+    if (d && typeof d.likes === "number") {
+      const span = btn.querySelector("span");
+      if (span) span.textContent = currentLang === "fa" ? faNum(d.likes) : String(d.likes);
+      btn.classList.add("done");
+      try { localStorage.setItem("liked:" + id, "1"); } catch (e) {}
+    }
+  } catch (e) { /* ثبت لایک ممکن نشد */ }
+}
+
+/* ---------- فرم تماس با مدیر (Netlify Forms) ---------- */
+const contactForm = document.getElementById("contactForm");
+if (contactForm) {
+  contactForm.addEventListener("submit", async function (ev) {
+    ev.preventDefault();
+    const L = I18N[currentLang];
+    const status = document.getElementById("ctStatus");
+    const fd = new FormData(contactForm);
+    try {
+      const r = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(fd).toString()
+      });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      status.textContent = L.ctok;
+      status.className = "contact-status ok";
+      contactForm.reset();
+    } catch (e) {
+      status.textContent = L.cterr;
+      status.className = "contact-status err";
+    }
+  });
+}
 
 /* هر ۵ دقیقه یک‌بار، خبرهای تازه از کانال گرفته می‌شوند */
 setInterval(loadChannelNews, 300000);
