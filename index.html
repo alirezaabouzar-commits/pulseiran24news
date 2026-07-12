@@ -431,6 +431,42 @@
     color: var(--text-dim);
   }
 
+  /* ---------- نوار رسانه‌های بین‌المللی (پایین صفحه) ---------- */
+  .intl-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    background: rgba(13, 17, 23, 0.96);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid var(--line);
+    z-index: 90;
+    overflow: hidden;
+  }
+  .intl-label {
+    flex-shrink: 0;
+    background: var(--gold);
+    color: #1A1405;
+    font-weight: 900;
+    font-size: 0.72rem;
+    padding: 0 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .intl-ticker { animation-duration: 60s; }
+  .intl-ticker b { color: var(--gold); font-weight: 700; }
+  .intl-ticker a {
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+  .intl-ticker a:hover { color: var(--text); text-decoration: underline; }
+  body.intl-on footer { padding-bottom: 84px; }
+
   /* ---------- کانال تلگرام ---------- */
   .channel-card {
     background: linear-gradient(135deg, var(--surface), var(--surface-2));
@@ -629,6 +665,14 @@
   <p class="visits-line">👁 <span id="t-visits">بازدید کل</span>: <span id="visitCount">…</span></p>
 </footer>
 
+<!-- نوار رسانه‌های بین‌المللی -->
+<div class="intl-bar" id="intlBar" dir="rtl" style="display:none;">
+  <div class="intl-label" id="t-intl">رسانه‌های بین‌المللی</div>
+  <div class="ticker-wrap">
+    <div class="ticker intl-ticker" id="intlTicker"></div>
+  </div>
+</div>
+
 <script>
 /* ==========================================================
    🌐 متن‌های رابط سایت به سه زبان
@@ -676,7 +720,8 @@ const I18N = {
     ctsend: "ارسال پیام",
     ctok: "پیام شما دریافت شد. متشکریم! 🙏",
     cterr: "ارسال ممکن نشد — دوباره تلاش کنید.",
-    visits: "بازدید کل"
+    visits: "بازدید کل",
+    intl: "رسانه‌های بین‌المللی"
   },
   en: {
     dir: "ltr",
@@ -720,7 +765,8 @@ const I18N = {
     ctsend: "Send message",
     ctok: "Message received. Thank you! 🙏",
     cterr: "Sending failed — please try again.",
-    visits: "Total visits"
+    visits: "Total visits",
+    intl: "International media"
   },
   de: {
     dir: "ltr",
@@ -764,7 +810,8 @@ const I18N = {
     ctsend: "Nachricht senden",
     ctok: "Nachricht erhalten. Vielen Dank! 🙏",
     cterr: "Senden fehlgeschlagen — bitte erneut versuchen.",
-    visits: "Besuche insgesamt"
+    visits: "Besuche insgesamt",
+    intl: "Internationale Medien"
   }
 };
 
@@ -1117,7 +1164,7 @@ function applyUI() {
     "t-s1v": "s1v", "t-s1l": "s1l", "t-s2v": "s2v", "t-s2l": "s2l",
     "t-s3v": "s3v", "t-s3l": "s3l", "t-s4v": "s4v", "t-s4l": "s4l",
     "t-f1": "f1", "t-f2": "f2", "t-f3": "f3", "t-f4": "f4", "t-copy": "copyright",
-    "t-cttitle": "cttitle", "t-cttext": "cttext", "t-visits": "visits"
+    "t-cttitle": "cttitle", "t-cttext": "cttext", "t-visits": "visits", "t-intl": "intl"
   };
   for (const id in map) {
     const el = document.getElementById(id);
@@ -1209,6 +1256,24 @@ async function initVisits() {
   }
 }
 initVisits();
+
+/* ---------- نوار رسانه‌های بین‌المللی ---------- */
+async function loadIntl() {
+  try {
+    const r = await fetch("/.netlify/functions/intl");
+    const d = await r.json();
+    if (!d || !d.ok || !d.items || !d.items.length) return;
+    const t = document.getElementById("intlTicker");
+    t.innerHTML = d.items.map(it =>
+      `<span><b>${esc(it.s)}:</b> <a href="${esc(it.l)}" target="_blank" rel="noopener">${esc(it.t)}</a></span>`
+    ).join("");
+    document.getElementById("intlBar").style.display = "flex";
+    document.body.classList.add("intl-on");
+  } catch (e) { /* نوار نمایش داده نمی‌شود */ }
+}
+loadIntl();
+/* هر ۱۰ دقیقه تیترهای تازه گرفته می‌شوند */
+setInterval(loadIntl, 600000);
 
 async function loadLikes(ids) {
   if (!ids || !ids.length) return;
